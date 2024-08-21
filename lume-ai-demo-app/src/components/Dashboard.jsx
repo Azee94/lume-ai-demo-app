@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,6 +18,8 @@ import testData from '@/data/test_dataset.json';
 const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [listHeight, setListHeight] = useState(400); // Default height
+  const containerRef = useRef(null);
 
   const filteredData = useMemo(() => {
     return testData.filter(customer =>
@@ -25,6 +27,21 @@ const Dashboard = () => {
       customer.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm]);
+
+  const updateListHeight = useCallback(() => {
+    if (containerRef.current) {
+      const windowHeight = window.innerHeight;
+      const containerTop = containerRef.current.getBoundingClientRect().top;
+      const newHeight = windowHeight - containerTop - 20; // 20px for some bottom margin
+      setListHeight(Math.max(200, newHeight)); // Ensure a minimum height of 200px
+    }
+  }, []);
+
+  useEffect(() => {
+    updateListHeight();
+    window.addEventListener('resize', updateListHeight);
+    return () => window.removeEventListener('resize', updateListHeight);
+  }, [updateListHeight]);
 
   const Row = useCallback(({ index, style }) => {
     const customer = filteredData[index];
@@ -54,7 +71,7 @@ const Dashboard = () => {
   }, [filteredData]);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4" ref={containerRef}>
       <h1 className="text-2xl font-bold mb-4">Customer Dashboard</h1>
       <Input
         type="text"
@@ -64,7 +81,7 @@ const Dashboard = () => {
         className="mb-4"
       />
       <List
-        height={400}
+        height={listHeight}
         itemCount={filteredData.length}
         itemSize={50}
         width="100%"
