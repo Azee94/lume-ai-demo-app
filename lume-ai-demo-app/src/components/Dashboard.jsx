@@ -1,10 +1,24 @@
 "use client";
 
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Eye, Mail, Phone } from "lucide-react";
 import { FixedSizeList as List } from "react-window";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Import the data
 import testData from "@/data/test_dataset.json";
@@ -39,8 +53,8 @@ const Dashboard = () => {
     ({ index, style }) => {
       const member = filteredData[index];
       return (
-        <tr key={member.id} style={style}>
-          <td className="border-b border-gray-200 py-4">
+        <TableRow key={member.id} style={style}>
+          <TableCell className="font-medium">
             <div className="flex items-center">
               <img
                 src={`https://i.pravatar.cc/40?u=${member.email}`}
@@ -48,29 +62,26 @@ const Dashboard = () => {
                 className="w-10 h-10 rounded-full mr-4"
               />
               <div>
-                <div className="font-medium">{member.name}</div>
+                <div>{member.name}</div>
                 <div className="text-sm text-gray-500">{member.id}</div>
               </div>
             </div>
-          </td>
-          <td className="border-b border-gray-200 py-4">
+          </TableCell>
+          <TableCell>
             <div className="flex items-center">
-              <Mail className="w-4 h-4 mr-2 text-gray-400" aria-hidden="true" />
+              <Mail className="w-4 h-4 mr-2 text-gray-400" />
               <span className="text-sm">{member.email}</span>
             </div>
-          </td>
-          <td className="border-b border-gray-200 py-4">
+          </TableCell>
+          <TableCell>
             <div className="flex items-center">
-              <Phone
-                className="w-4 h-4 mr-2 text-gray-400"
-                aria-hidden="true"
-              />
+              <Phone className="w-4 h-4 mr-2 text-gray-400" />
               <span className="text-sm">{member.phone}</span>
             </div>
-          </td>
-          <td className="border-b border-gray-200 py-4 text-center">
+          </TableCell>
+          <TableCell className="text-center">
             <span
-              className={`px-2 py-1 rounded-full text-xs capitalize ${
+              className={`px-2 py-1 rounded-full text-xs ${
                 member.gender.toLowerCase() === "male"
                   ? "bg-blue-100 text-blue-800"
                   : "bg-pink-100 text-pink-800"
@@ -78,18 +89,17 @@ const Dashboard = () => {
             >
               {member.gender}
             </span>
-          </td>
-          <td className="border-b border-gray-200 py-4 text-right">
+          </TableCell>
+          <TableCell className="text-right">
             <Button
               variant="outline"
               size="sm"
               className="inline-flex items-center"
             >
-              <Eye className="w-4 h-4 mr-1" aria-hidden="true" />
-              <span>View</span>
+              <Eye className="w-4 h-4 mr-1" /> View
             </Button>
-          </td>
-        </tr>
+          </TableCell>
+        </TableRow>
       );
     },
     [filteredData]
@@ -98,31 +108,25 @@ const Dashboard = () => {
   const innerElementType = React.useMemo(
     () =>
       React.forwardRef(({ style, ...rest }, ref) => (
-        <table className="min-w-full" ref={ref} {...rest} style={{ ...style }}>
-          <thead>
-            <tr>
-              <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                Member
-              </th>
-              <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                Mobile Number
-              </th>
-              <th className="px-6 py-3 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                Gender
-              </th>
-              <th className="px-6 py-3 bg-gray-50 text-right text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>{rest.children}</tbody>
-        </table>
+        <Table ref={ref} {...rest} style={{ ...style }}>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[250px]">Member</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Mobile Number</TableHead>
+              <TableHead className="text-center">Gender</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>{rest.children}</TableBody>
+        </Table>
       )),
     []
   );
+  //   const memoizedRows = useMemo(
+  //     () => filteredData.map((member) => <Row key={member.id} member={member} />),
+  //     [filteredData, Row]
+  //   );
 
   return (
     <div className="container mx-auto p-6" ref={containerRef}>
