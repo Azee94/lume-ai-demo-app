@@ -9,16 +9,9 @@ import React, {
 } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Eye, Mail, Phone } from "lucide-react";
+import { Search, Eye, Mail, Phone, UsersIcon } from "lucide-react";
 import { FixedSizeList as List } from "react-window";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import CustomerDetailSheet from '@/components/CustomerDetailModal';
 // Import the data
 import testData from "@/data/test_dataset.json";
@@ -60,50 +53,52 @@ const handleCloseSheet = () => {
     setIsSheetOpen(false);
     setSelectedCustomer(null);
 };
-  const Row = useCallback(
+const Row = useCallback(
     ({ index, style }) => {
       const member = filteredData[index];
-      console.log('style: ', style)
-      console.log('index: ', index)
+      const isMale = member.gender.toLowerCase() === "male";
       return (
-        <TableRow key={member.id} >
-          <TableCell className="font-medium">
-            <div className="flex items-center">
-              <img
-                src={`https://i.pravatar.cc/40?u=${member.email}`}
-                alt={member.name}
-                className="w-10 h-10 rounded-full mr-4"
-              />
-              <div>
-                <div>{member.name}</div>
-                <div className="text-sm text-gray-500">{member.id}</div>
-              </div>
+        <div
+          style={{
+            ...style,
+            display: "flex",
+            alignItems: "center",
+            padding: "12px 16px",
+            borderBottom: "1px solid #e2e8f0",
+          }}
+          key={member.id}
+        >
+          <div style={{ display: "flex", alignItems: "center", width: "30%" }}>
+            <img
+              src={`https://i.pravatar.cc/40?u=${member.email}`}
+              alt={member.name}
+              className="w-10 h-10 rounded-full mr-4"
+            />
+            <div>
+              <div className="font-medium">{member.name}</div>
             </div>
-          </TableCell>
-          <TableCell>
-            <div className="flex items-center">
-              <Mail className="w-4 h-4 mr-2 text-gray-400" />
-              <span className="text-sm">{member.email}</span>
-            </div>
-          </TableCell>
-          <TableCell>
-            <div className="flex items-center">
-              <Phone className="w-4 h-4 mr-2 text-gray-400" />
-              <span className="text-sm">{member.phone}</span>
-            </div>
-          </TableCell>
-          <TableCell className="text-center">
+          </div>
+          <div style={{ display: "flex", alignItems: "center", width: "30%" }}>
+            <Mail className="w-4 h-4 mr-2 text-gray-400" />
+            <span className="text-sm">{member.email}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", width: "20%" }}>
+            <Phone className="w-4 h-4 mr-2 text-gray-400" />
+            <span className="text-sm">{member.phone}</span>
+          </div>
+          <div style={{ width: "10%", textAlign: "center" }}>
             <span
-              className={`px-2 py-1 rounded-full text-xs ${
-                member.gender.toLowerCase() === "male"
+              className={`px-2 py-1 rounded-full text-xs flex items-center justify-center ${
+                isMale
                   ? "bg-blue-100 text-blue-800"
                   : "bg-pink-100 text-pink-800"
               }`}
             >
+                <UsersIcon className="w-4 h-4 mr-1" />
               {member.gender}
             </span>
-          </TableCell>
-          <TableCell className="text-right">
+          </div>
+          <div style={{ width: "10%", textAlign: "right" }}>
             <Button
               variant="outline"
               size="sm"
@@ -112,30 +107,26 @@ const handleCloseSheet = () => {
             >
               <Eye className="w-4 h-4 mr-1" /> View
             </Button>
-          </TableCell>
-        </TableRow>
+          </div>
+        </div>
       );
     },
-    [filteredData]
+    [filteredData, handleViewCustomer]
   );
 
   const innerElementType = useMemo(
     () =>
       React.forwardRef(({ style, ...rest }, ref) => (
-        // <div ref={ref} style={{ ...style, height: '100%', overflow: 'auto' }}>
-        <Table ref={ref} style={{ height: '100%' }}>
-          <TableHeader className="sticky top-0 bg-white z-10">
-            <TableRow>
-              <TableHead className="w-[250px]">Member</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Mobile Number</TableHead>
-              <TableHead className="text-center">Gender</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>{rest.children}</TableBody>
-        </Table>
-        // </div>
+        <div ref={ref} style={{ ...style, height: '100%', overflow: 'auto' }}>
+          {/* <div style={{display: 'flex', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', fontWeight: 'bold', backgroundColor: '#f8fafc'}}>
+            <div style={{width: '30%'}}>Member</div>
+            <div style={{width: '30%'}}>Email</div>
+            <div style={{width: '20%'}}>Mobile Number</div>
+            <div style={{width: '10%', textAlign: 'center'}}>Gender</div>
+            <div style={{width: '10%', textAlign: 'right'}}>Actions</div>
+          </div> */}
+          {rest.children}
+        </div>
       )),
     []
   );
@@ -171,7 +162,23 @@ const handleCloseSheet = () => {
         </div>
       </div>
 
-      <div className="overflow-hidden border rounded-lg">
+      <div className="overflow-hidden border rounded-lg" style={{ height: listHeight + 40, position: 'relative' }}>
+      <div style={{
+          display: 'flex',
+          padding: '12px 16px',
+          borderBottom: '1px solid #e2e8f0',
+          fontWeight: 'bold',
+          backgroundColor: '#f8fafc',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10
+        }}>
+          <div style={{width: '30%'}}>Member</div>
+          <div style={{width: '30%'}}>Email</div>
+          <div style={{width: '20%'}}>Mobile Number</div>
+          <div style={{width: '10%', textAlign: 'center'}}>Gender</div>
+          <div style={{width: '10%', textAlign: 'right'}}>Actions</div>
+        </div>
         <List
           height={listHeight}
           itemCount={filteredData.length}
