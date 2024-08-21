@@ -88,7 +88,7 @@ const Row = useCallback(
           </div>
           <div style={{ width: "10%", textAlign: "center" }}>
             <span
-              className={`px-2 py-1 rounded-full text-xs flex items-center justify-center ${
+              className={`px-2 py-2 rounded-full text-xs flex items-center justify-center capitalize ${
                 isMale
                   ? "bg-blue-100 text-blue-800"
                   : "bg-pink-100 text-pink-800"
@@ -153,7 +153,7 @@ const Row = useCallback(
               aria-label="Search team members"
             />
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-2">
+          <Button className="bg-gray-900 hover:bg-gray-700 text-white rounded-full px-4 py-2">
             Add{" "}
             <span className="ml-1" aria-hidden="true">
               +
