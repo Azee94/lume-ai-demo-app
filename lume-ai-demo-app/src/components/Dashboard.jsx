@@ -1,4 +1,5 @@
-'use client'
+"use client";
+
 import React, {
   useState,
   useCallback,
@@ -18,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
+import CustomerDetailSheet from '@/components/CustomerDetailModal';
 // Import the data
 import testData from "@/data/test_dataset.json";
 
@@ -26,19 +27,20 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [listHeight, setListHeight] = useState(400);
   const containerRef = useRef(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const filteredData = testData.filter(
     (member) =>
-      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchTerm.toLowerCase())
+      member.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const updateListHeight = useCallback(() => {
     if (containerRef.current) {
       const windowHeight = window.innerHeight;
       const containerTop = containerRef.current.getBoundingClientRect().top;
-      const newHeight = windowHeight - containerTop - 130; 
-      setListHeight(Math.max(200, newHeight)); 
+      const newHeight = windowHeight - containerTop - 40; // 40px for some bottom margin
+      setListHeight(Math.max(200, newHeight)); // Ensure a minimum height of 200px
     }
   }, []);
 
@@ -48,11 +50,23 @@ const Dashboard = () => {
     return () => window.removeEventListener("resize", updateListHeight);
   }, [updateListHeight]);
 
+  const handleViewCustomer = (customer) => {
+    console.log('customer', customer)
+    setSelectedCustomer(customer);
+    setIsSheetOpen(true);
+  };
+
+const handleCloseSheet = () => {
+    setIsSheetOpen(false);
+    setSelectedCustomer(null);
+};
   const Row = useCallback(
     ({ index, style }) => {
       const member = filteredData[index];
+      console.log('style: ', style)
+      console.log('index: ', index)
       return (
-        <TableRow key={member.id} className="h-20">
+        <TableRow key={member.id} >
           <TableCell className="font-medium">
             <div className="flex items-center">
               <img
@@ -94,6 +108,7 @@ const Dashboard = () => {
               variant="outline"
               size="sm"
               className="inline-flex items-center"
+              onClick={() => handleViewCustomer(member)}
             >
               <Eye className="w-4 h-4 mr-1" /> View
             </Button>
@@ -107,24 +122,24 @@ const Dashboard = () => {
   const innerElementType = useMemo(
     () =>
       React.forwardRef(({ style, ...rest }, ref) => (
-        <div ref={ref} style={{ ...style, height: '100%', overflow: 'auto' }}>
-          <Table>
-            <TableHeader className="sticky top-0 bg-white z-10">
-              <TableRow>
-                <TableHead className="w-[250px]">Member</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Mobile Number</TableHead>
-                <TableHead className="text-center">Gender</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>{rest.children}</TableBody>
-          </Table>
-        </div>
+        // <div ref={ref} style={{ ...style, height: '100%', overflow: 'auto' }}>
+        <Table ref={ref} style={{ height: '100%' }}>
+          <TableHeader className="sticky top-0 bg-white z-10">
+            <TableRow>
+              <TableHead className="w-[250px]">Member</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Mobile Number</TableHead>
+              <TableHead className="text-center">Gender</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>{rest.children}</TableBody>
+        </Table>
+        // </div>
       )),
     []
   );
-
+  
   return (
     <div className="container mx-auto p-6" ref={containerRef}>
       <div className="flex justify-between items-center mb-6">
@@ -158,7 +173,6 @@ const Dashboard = () => {
 
       <div className="overflow-hidden border rounded-lg">
         <List
-          className="List"
           height={listHeight}
           itemCount={filteredData.length}
           itemSize={80}
@@ -168,6 +182,12 @@ const Dashboard = () => {
           {Row}
         </List>
       </div>
+      {selectedCustomer &&
+      <CustomerDetailSheet
+        isOpen={isSheetOpen}
+        onClose={handleCloseSheet}
+        customer={selectedCustomer}
+      />}
     </div>
   );
 };
