@@ -1,5 +1,4 @@
-"use client";
-
+'use client'
 import React, {
   useState,
   useCallback,
@@ -38,8 +37,8 @@ const Dashboard = () => {
     if (containerRef.current) {
       const windowHeight = window.innerHeight;
       const containerTop = containerRef.current.getBoundingClientRect().top;
-      const newHeight = windowHeight - containerTop - 40; // 40px for some bottom margin
-      setListHeight(Math.max(200, newHeight)); // Ensure a minimum height of 200px
+      const newHeight = windowHeight - containerTop - 130; 
+      setListHeight(Math.max(200, newHeight)); 
     }
   }, []);
 
@@ -53,7 +52,7 @@ const Dashboard = () => {
     ({ index, style }) => {
       const member = filteredData[index];
       return (
-        <TableRow key={member.id} style={style}>
+        <TableRow key={member.id} className="h-20">
           <TableCell className="font-medium">
             <div className="flex items-center">
               <img
@@ -105,28 +104,26 @@ const Dashboard = () => {
     [filteredData]
   );
 
-  const innerElementType = React.useMemo(
+  const innerElementType = useMemo(
     () =>
       React.forwardRef(({ style, ...rest }, ref) => (
-        <Table ref={ref} {...rest} style={{ ...style }}>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[250px]">Member</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Mobile Number</TableHead>
-              <TableHead className="text-center">Gender</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>{rest.children}</TableBody>
-        </Table>
+        <div ref={ref} style={{ ...style, height: '100%', overflow: 'auto' }}>
+          <Table>
+            <TableHeader className="sticky top-0 bg-white z-10">
+              <TableRow>
+                <TableHead className="w-[250px]">Member</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Mobile Number</TableHead>
+                <TableHead className="text-center">Gender</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>{rest.children}</TableBody>
+          </Table>
+        </div>
       )),
     []
   );
-  //   const memoizedRows = useMemo(
-  //     () => filteredData.map((member) => <Row key={member.id} member={member} />),
-  //     [filteredData, Row]
-  //   );
 
   return (
     <div className="container mx-auto p-6" ref={containerRef}>
@@ -159,8 +156,9 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="overflow-hidden">
+      <div className="overflow-hidden border rounded-lg">
         <List
+          className="List"
           height={listHeight}
           itemCount={filteredData.length}
           itemSize={80}
